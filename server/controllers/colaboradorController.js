@@ -66,14 +66,14 @@ async function listar(req, res) {
 
 async function criar(req, res) {
 	try {
-		const { matricula, nome, email, empresa } = req.body;
-		if (!matricula || !nome || !email || !empresa) {
+		const { numeroEmpresa, nomeEmpresa } = req.body;
+		if (!numeroEmpresa || !nomeEmpresa) {
 			return res.status(400).json({ erro: "Campos obrigatórios!" });
 		}
 
 		const result = await pool.query(
-			"INSERT INTO empresas (numero_matricula, nome_colaborador, email_colaborador, numero_empresa) VALUES ($1, $2, $3, $4) RETURNING *",
-			[matricula, nome, email, empresa],
+			"INSERT INTO empresas (numero_empresa, nome_empresa) VALUES ($1, $2) RETURNING *",
+			[numeroEmpresa, nomeEmpresa],
 		);
 		res.status(201).json(result.rows[0]);
 	} catch (err) {
