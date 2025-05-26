@@ -39,7 +39,7 @@ export default function Home() {
 			}
 		} catch (err) {
 			console.error(err);
-			setStatus("❌ Erro na conexão com o servidor.");
+			setStatus("❌ Erro na conexão com o servidor.", err);
 		}
 	};
 
@@ -69,7 +69,7 @@ export default function Home() {
 						<div
 							className="bg-blue-500 h-4 rounded-full transition-all duration-500"
 							style={{ width: `${progress}%` }}
-						></div>
+						/>
 					</div>
 				)}
 
