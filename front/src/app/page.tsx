@@ -4,7 +4,7 @@ export default function Home() {
 	return (
 		<div>
 			<Link href="/envio">Enviar Arquivos</Link>
-			<Link href="/envio">Enviar Arquivos</Link>
+			<Link href="/colaboradores">Colaboradores</Link>
 		</div>
 	);
 }

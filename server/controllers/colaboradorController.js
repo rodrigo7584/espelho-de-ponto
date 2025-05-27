@@ -14,7 +14,7 @@ async function buscarPorColaborador(req, res) {
 	const id = req.params.id;
 	try {
 		const result = await pool.query(
-			"SELECT * FROM colaboradores WHERE numero_matricula = $1",
+			"SELECT * FROM colaboradores WHERE id = $1",
 			[id],
 		);
 		if (result.rows.length > 0) {
