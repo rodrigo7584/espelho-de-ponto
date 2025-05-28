@@ -5,8 +5,17 @@ import { useEffect, useState } from 'react';
 export default function EditarColaborador() {
   const { id } = useParams();
   const [form, setForm] = useState({ matricula: '', nome: '', email: '', empresa: '' });
+  const [empresas, setEmpresas] = useState([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+
+  useEffect(() => {
+    // Buscar empresas
+    fetch('http://localhost:3001/api/colaboradores/empresas')
+      .then(res => res.json())
+      .then(data => setEmpresas(data))
+      .catch(err => console.error('Erro ao buscar empresas:', err));
+  }, []);
 
   useEffect(() => {
     setLoading(true);
@@ -17,7 +26,7 @@ export default function EditarColaborador() {
           matricula: data.numero_matricula ?? '',
           nome: data.nome_colaborador ?? '',
           email: data.email_colaborador ?? '',
-          empresa: data.numero_empresa ?? '',
+          empresa: data.numero_empresa ?? '',  // Aqui continua vindo o ID da empresa
         });
       })
       .catch(err => {
@@ -52,21 +61,32 @@ export default function EditarColaborador() {
           value={form.matricula}
           onChange={e => setForm({ ...form, matricula: e.target.value })}
         /><br/>
+
         <input
           placeholder="Nome"
           value={form.nome}
           onChange={e => setForm({ ...form, nome: e.target.value })}
         /><br/>
+
         <input
           placeholder="Email"
           value={form.email}
           onChange={e => setForm({ ...form, email: e.target.value })}
         /><br/>
-        <input
-          placeholder="Empresa"
+
+        <label>Empresa:</label>
+        <select
           value={form.empresa}
           onChange={e => setForm({ ...form, empresa: e.target.value })}
-        /><br/>
+        >
+          <option value="">Selecione uma empresa</option>
+          {empresas.map(empresa => (
+            <option key={empresa.id} value={empresa.numero_empresa}>
+              {empresa.nome_empresa}
+            </option>
+          ))}
+        </select><br/>
+
         <button type="submit">Atualizar</button>
       </form>
     </div>

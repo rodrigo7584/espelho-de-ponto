@@ -29,7 +29,7 @@ async function buscarPorColaborador(req, res) {
 }
 
 async function buscarPorEmpresa(req, res) {
-	const id = Number.parseInt(req.params.id);
+	const id = req.params.id;
 	if (!id) {
 		return res.status(400).json({ erro: "ID obrigatório!" });
 	}
@@ -46,6 +46,16 @@ async function buscarPorEmpresa(req, res) {
 	} catch (err) {
 		console.error(err);
 		res.status(500).json({ mensagem: "Erro ao buscar colaborador" });
+	}
+}
+
+async function buscarEmpresas(req, res) {
+	try {
+		const result = await pool.query("SELECT * FROM empresas");
+		res.json(result.rows);
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ mensagem: "Erro ao listar empresas" });
 	}
 }
 
@@ -111,6 +121,7 @@ module.exports = {
 	listar,
 	buscarPorColaborador,
 	buscarPorEmpresa,
+	buscarEmpresas,
 	criar,
 	atualizar,
 	excluir,
