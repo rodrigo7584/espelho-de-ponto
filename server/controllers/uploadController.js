@@ -2,11 +2,30 @@ const fs = require("fs");
 const { PDFDocument } = require("pdf-lib");
 const { extractTextFromPDF } = require("../services/pdfService");
 const { sendEmail } = require("../services/emailService");
-const colaboradores = require("../data/colaboradores");
+const pool = require("../db"); // conexão com o banco de dados PostgreSQL
 
 async function handleUpload(req, res) {
 	try {
 		const pdfPath = req.file.path;
+		const numero_empresa = req.body.numero_empresa;
+
+		if (!numero_empresa) {
+			return res.status(400).send("Número da empresa não informado.");
+		}
+
+		// Consulta os colaboradores dessa empresa
+		const { rows: colaboradores } = await pool.query(
+			"SELECT numero_matricula, email_colaborador FROM colaboradores WHERE numero_empresa = $1",
+			[numero_empresa],
+		);
+
+		if (colaboradores.length === 0) {
+			return res
+				.status(404)
+				.send("Nenhum colaborador encontrado para esta empresa.");
+		}
+		console.log(colaboradores);
+
 		const pdfBytes = fs.readFileSync(pdfPath);
 		const pdfDoc = await PDFDocument.load(pdfBytes);
 		const numPages = pdfDoc.getPageCount();
@@ -24,7 +43,6 @@ async function handleUpload(req, res) {
 
 			const pageText = await extractTextFromPDF(outputPath);
 			const linhas = pageText.split("\n").map((l) => l.trim());
-
 			const linhaMatricula = linhas[5];
 
 			if (linhaMatricula) {
@@ -36,12 +54,13 @@ async function handleUpload(req, res) {
 					);
 
 					const colaborador = colaboradores.find(
-						(col) => col.matricula === matriculaEncontrada,
+						(col) => col.numero_matricula === matriculaEncontrada,
 					);
-
 					if (colaborador) {
-						await sendEmail(colaborador.email, outputPath);
-						console.log(`Página ${i + 1} enviada para ${colaborador.email}`);
+						await sendEmail(colaborador.email_colaborador, outputPath);
+						console.log(
+							`Página ${i + 1} enviada para ${colaborador.email_colaborador}`,
+						);
 					}
 				}
 			}

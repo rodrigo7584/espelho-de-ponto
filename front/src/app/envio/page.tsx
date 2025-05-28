@@ -1,17 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Envio() {
 	const [file, setFile] = useState(null);
 	const [progress, setProgress] = useState(0);
 	const [status, setStatus] = useState("");
+	const [empresas, setEmpresas] = useState([]);
+	const [empresaSelecionada, setEmpresaSelecionada] = useState("");
 
 	const handleFileChange = (e) => {
 		setFile(e.target.files[0]);
 		setStatus("");
 		setProgress(0);
 	};
+
+	useEffect(() => {
+		fetch('http://localhost:3001/api/colaboradores/empresas')
+			.then(res => res.json())
+			.then(data => setEmpresas(data))
+			.catch(err => console.error('Erro ao buscar empresas:', err));
+	}, []);
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -21,8 +30,14 @@ export default function Envio() {
 			return;
 		}
 
+		if (!empresaSelecionada) {
+			setStatus("Por favor, selecione uma empresa.");
+			return;
+		}
+
 		const formData = new FormData();
 		formData.append("pdf", file);
+		formData.append("numero_empresa", empresaSelecionada);
 
 		setStatus("Enviando...");
 
@@ -55,6 +70,19 @@ export default function Envio() {
 						onChange={handleFileChange}
 						className="block w-full text-gray-700 border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
 					/>
+
+					<select
+						value={empresaSelecionada}
+						onChange={(e) => setEmpresaSelecionada(e.target.value)}
+						className="block w-full text-gray-700 border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+					>
+						<option value="">Selecione uma empresa</option>
+						{empresas.map((empresa) => (
+							<option key={empresa.numero_empresa} value={empresa.numero_empresa}>
+								{empresa.nome_empresa}
+							</option>
+						))}
+					</select>
 
 					<button
 						type="submit"
