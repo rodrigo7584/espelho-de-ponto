@@ -1,11 +1,32 @@
 'use client';
+import VoltarBotao from '@/components/btnVoltar';
+import { Button } from '@/components/ui/button';
+ import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import {  FunnelIcon, UserRoundPen, UserRoundPlus, UserRoundX } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function Colaboradores() {
   const [colaboradores, setColaboradores] = useState([]);
   const [empresas, setEmpresas] = useState([]);
-  const [filtroEmpresa, setFiltroEmpresa] = useState('');  // 👈 Filtro
+  const [filtroEmpresa, setFiltroEmpresa] = useState('all');  // 👈 Filtro
   const router = useRouter();
 
   useEffect(() => {
@@ -34,68 +55,72 @@ export default function Colaboradores() {
   };
 
   // Filtra os colaboradores conforme a empresa selecionada
-  const colaboradoresFiltrados = filtroEmpresa
-    ? colaboradores.filter(c => c.numero_empresa === filtroEmpresa)
-    : colaboradores;
-
+ const colaboradoresFiltrados = 
+  filtroEmpresa === "all"
+    ? colaboradores
+    : colaboradores.filter(c => c.numero_empresa === filtroEmpresa);
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>Colaboradores</h1>
-      <button onClick={() => router.push('/colaboradores/novo')}>
-        Adicionar Novo Colaborador
-      </button>
+    <main className="max-w-[1100px] m-auto p-5 flex flex-col gap-6">
+      <h1 className="text-3xl text-center font-medium">
+        Colaboradores
+      </h1>
+      <div className="flex items-center justify-between gap-3">
+        <VoltarBotao/>
+        <div className="flex gap-3">
+          <Button onClick={() => router.push('/colaboradores/novo')}>
+            <UserRoundPlus/>
+            Adicionar Novo Colaborador
+          </Button> 
 
-      {/* Filtro de empresa */}
-      <div style={{ marginTop: '20px' }}>
-        <label>Filtrar por Empresa:</label>
-        <select value={filtroEmpresa} onChange={e => setFiltroEmpresa(e.target.value)}>
-          <option value="">Todas</option>
-          {empresas.map(empresa => (
-            <option key={empresa.id} value={empresa.id}>
-              {empresa.nome_empresa}
-            </option>
-          ))}
-        </select>
+          <Select value={filtroEmpresa} onValueChange={setFiltroEmpresa}>
+            <SelectTrigger className="w-[230px]">
+                <FunnelIcon/>
+              <SelectValue placeholder="Selecione a empresa" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Empresas</SelectLabel>
+                  <SelectItem value="all">
+                    Todas
+                  </SelectItem>
+                  {empresas.map(empresa => (
+                    <SelectItem  key={empresa.id} value={empresa.numero_empresa}>
+                    {empresa.nome_empresa}
+                    </SelectItem>
+                  ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
-
-      <table border="1" cellPadding="10" style={{ marginTop: '20px' }}>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Matrícula</th>
-            <th>Nome</th>
-            <th>Email</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          {colaboradoresFiltrados.map(colab => (
-            <tr key={colab.id}>
-              <td>{colab.id}</td>
-              <td>{colab.numero_matricula}</td>
-              <td>{colab.nome_colaborador}</td>
-              <td>{colab.email_colaborador}</td>
-              <td>
-                <button onClick={() => router.push(`/colaboradores/${colab.id}`)}>
-                  Alterar
-                </button>
-                <button onClick={() => excluirColaborador(colab.id)} style={{ marginLeft: '10px', color: 'red' }}>
-                  Excluir
-                </button>
-              </td>
-            </tr>
+      <Table className="p-6 bg-blue-50 rounded-lg shadow-lg">
+        <TableCaption>Lista de todos colaboradores</TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-[100px]">Matrícula</TableHead>
+            <TableHead>Nome</TableHead>
+            <TableHead>Email</TableHead>
+            <TableHead className="w-[110px] text-right"> </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {colaboradoresFiltrados.map(colaborador => (
+            <TableRow  key={colaborador.id}>
+              <TableCell className="font-medium">{colaborador.numero_matricula}</TableCell>
+              <TableCell>{colaborador.nome_colaborador}</TableCell>
+              <TableCell>{colaborador.email_colaborador}</TableCell>
+              <TableCell className="flex gap-2 justify-end">
+                <Button onClick={() => router.push(`/colaboradores/${colaborador.id}`)}>
+                  <UserRoundPen/>
+                </Button>
+                <Button variant='destructive' onClick={() => excluirColaborador(colaborador.id)} className='bg-red-500 '>
+                    <UserRoundX/>
+                </Button>
+              </TableCell>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
-
-      <div style={{ marginTop: '20px' }}>
-        <h2>Empresas</h2>
-        {empresas.map(empresa => (
-          <div key={empresa.id}>
-            <strong>{empresa.nome_empresa}</strong>
-          </div>
-        ))}
-      </div>
-    </div>
+        </TableBody>
+      </Table>
+    </main>
   );
 }
