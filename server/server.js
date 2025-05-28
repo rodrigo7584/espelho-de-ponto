@@ -30,6 +30,6 @@ app.use("/api/upload", uploadRoutes);
 app.use("/api/colaboradores", colaboradorRoutes);
 
 // Inicia o servidor
-app.listen(3000, () => {
+app.listen(3001, () => {
 	console.log("Servidor rodando na porta 3001");
 });
