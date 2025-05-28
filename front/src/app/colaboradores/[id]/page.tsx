@@ -24,7 +24,7 @@ export default function EditarColaborador() {
 
   useEffect(() => {
     // Buscar empresas
-    fetch('http://localhost:3001/api/colaboradores/empresas')
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/colaboradores/empresas`)
       .then(res => res.json())
       .then(data => setEmpresas(data))
       .catch(err => console.error('Erro ao buscar empresas:', err));
@@ -32,7 +32,7 @@ export default function EditarColaborador() {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`http://localhost:3001/api/colaboradores/colaborador/${id}`)
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/colaboradores/colaborador/${id}`)
       .then(res => res.json())
       .then(data => {
         setForm({
@@ -51,7 +51,7 @@ export default function EditarColaborador() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch(`http://localhost:3001/api/colaboradores/colaborador/${id}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/colaboradores/colaborador/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(form),

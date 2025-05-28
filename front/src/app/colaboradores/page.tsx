@@ -28,16 +28,15 @@ export default function Colaboradores() {
   const [empresas, setEmpresas] = useState([]);
   const [filtroEmpresa, setFiltroEmpresa] = useState('all');  // 👈 Filtro
   const router = useRouter();
-
   useEffect(() => {
-    fetch('http://localhost:3001/api/colaboradores')
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/colaboradores`)
       .then(res => res.json())
       .then(data => setColaboradores(data))
       .catch(err => console.error('Erro ao buscar colaboradores:', err));
   }, []);
 
   useEffect(() => {
-    fetch('http://localhost:3001/api/colaboradores/empresas')
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/colaboradores/empresas`)
       .then(res => res.json())
       .then(data => setEmpresas(data))
       .catch(err => console.error('Erro ao buscar empresas:', err));
@@ -45,7 +44,7 @@ export default function Colaboradores() {
 
   const excluirColaborador = async (id) => {
     if (confirm('Tem certeza que deseja excluir?')) {
-      const res = await fetch(`http://localhost:3001/api/colaboradores/${id}`, { method: 'DELETE' });
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/colaboradores/${id}`, { method: 'DELETE' });
       if (res.ok) {
         setColaboradores(colaboradores.filter(c => c.id !== id));
       } else {

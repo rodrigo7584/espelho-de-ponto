@@ -21,7 +21,7 @@ export default function NovoColaborador() {
   const router = useRouter();
 
   useEffect(() => {
-    fetch('http://localhost:3001/api/colaboradores/empresas')
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/colaboradores/empresas`)
       .then(res => res.json())
       .then(data => setEmpresas(data))
       .catch(err => console.error('Erro ao buscar empresas:', err));
@@ -29,7 +29,7 @@ export default function NovoColaborador() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch('http://localhost:3001/api/colaboradores', {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/colaboradores`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(form),

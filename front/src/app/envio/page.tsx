@@ -16,7 +16,7 @@ export default function Envio() {
 	};
 
 	useEffect(() => {
-		fetch('http://localhost:3001/api/colaboradores/empresas')
+		fetch(`${process.env.NEXT_PUBLIC_API_URL}/colaboradores/empresas`)
 			.then(res => res.json())
 			.then(data => setEmpresas(data))
 			.catch(err => console.error('Erro ao buscar empresas:', err));
@@ -42,7 +42,7 @@ export default function Envio() {
 		setStatus("Enviando...");
 
 		try {
-			const res = await fetch("http://localhost:3001/api/upload", {
+			const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/upload`, {
 				method: "POST",
 				body: formData,
 			});
