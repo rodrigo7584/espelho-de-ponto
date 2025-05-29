@@ -33,7 +33,6 @@ async function handleUpload(req, res) {
 				.status(404)
 				.send("Nenhum colaborador encontrado para esta empresa.");
 		}
-		console.log(colaboradores);
 
 		const pdfBytes = fs.readFileSync(pdfPath);
 		const pdfDoc = await PDFDocument.load(pdfBytes);

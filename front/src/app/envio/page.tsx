@@ -47,10 +47,12 @@ export default function Envio() {
 				body: formData,
 			});
 
+			const mensagem = await res.text();
+			
 			if (res.ok) {
-				setStatus("✅ PDF enviado e processado com sucesso!");
+				setStatus(`✅ ${mensagem}`);
 			} else {
-				setStatus("❌ Erro ao enviar PDF.");
+				setStatus(`❌ ${mensagem}`);
 			}
 		} catch (err) {
 			console.error(err);
