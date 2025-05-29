@@ -8,11 +8,13 @@ export default function Envio() {
 	const [status, setStatus] = useState("");
 	const [empresas, setEmpresas] = useState([]);
 	const [empresaSelecionada, setEmpresaSelecionada] = useState("");
+	const [resultados, setResultados] = useState([]);
 
 	const handleFileChange = (e) => {
 		setFile(e.target.files[0]);
 		setStatus("");
 		setProgress(0);
+		setResultados([]);
 	};
 
 	useEffect(() => {
@@ -26,12 +28,12 @@ export default function Envio() {
 		e.preventDefault();
 
 		if (!file) {
-			setStatus("Por favor, selecione um arquivo PDF.");
+			setStatus("❌ Por favor, selecione um arquivo PDF.");
 			return;
 		}
 
 		if (!empresaSelecionada) {
-			setStatus("Por favor, selecione uma empresa.");
+			setStatus("❌ Por favor, selecione uma empresa.");
 			return;
 		}
 
@@ -39,7 +41,8 @@ export default function Envio() {
 		formData.append("pdf", file);
 		formData.append("numero_empresa", empresaSelecionada);
 
-		setStatus("Enviando...");
+		setStatus("⏳ Enviando...");
+		setProgress(10);
 
 		try {
 			const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/upload`, {
@@ -47,16 +50,27 @@ export default function Envio() {
 				body: formData,
 			});
 
-			const mensagem = await res.text();
-			
+			let json = { mensagem: "Resposta inválida do servidor." };
+
+			try {
+				json = await res.json();
+			} catch (e) {
+				console.error("Erro ao converter resposta para JSON:", e);
+			}
+
 			if (res.ok) {
-				setStatus(`✅ ${mensagem}`);
+				setStatus(`✅ ${json.mensagem}`);
+				setResultados(json.resultados || []);
+				setProgress(100);
+				setFile(null);  // limpa arquivo após sucesso
 			} else {
-				setStatus(`❌ ${mensagem}`);
+				setStatus(`❌ ${json.mensagem}`);
+				setProgress(0);
 			}
 		} catch (err) {
-			console.error(err);
+			console.error("Erro na requisição:", err);
 			setStatus("❌ Erro na conexão com o servidor.");
+			setProgress(0);
 		}
 	};
 
@@ -94,7 +108,7 @@ export default function Envio() {
 					</button>
 				</form>
 
-				{progress > 0 && (
+				{progress > 0 && progress < 100 && (
 					<div className="mt-4 w-full bg-gray-200 rounded-full h-4">
 						<div
 							className="bg-blue-500 h-4 rounded-full transition-all duration-500"
@@ -105,12 +119,36 @@ export default function Envio() {
 
 				{status && (
 					<p
-						className={`mt-4 text-sm font-medium ${status.startsWith("✅") ? "text-green-600" : "text-red-500"}`}
+						className={`mt-4 text-sm font-medium ${
+							status.startsWith("✅") ? "text-green-600" : "text-red-500"
+						}`}
 					>
 						{status}
 					</p>
 				)}
 			</div>
+
+			{resultados.length > 0 && (
+				<div className="mt-6 ml-6 bg-white shadow-lg rounded-xl p-6 max-w-md">
+					<h2 className="font-semibold mb-4 text-gray-700">Relatório de envio:</h2>
+					<ul className="space-y-2">
+						{resultados.map((r, index) => (
+							<li
+								key={index}
+								className={`p-2 rounded ${
+									r.enviado
+										? "bg-green-100 text-green-700"
+										: "bg-red-100 text-red-700"
+								}`}
+							>
+								Página {r.pagina}: {r.linhaColaborador || "Desconhecido"} -{" "}
+								{r.email || "Email não encontrado"} -{" "}
+								{r.enviado ? "✅ Enviado" : "❌ Não enviado"}
+							</li>
+						))}
+					</ul>
+				</div>
+			)}
 		</div>
 	);
 }
