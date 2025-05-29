@@ -1,11 +1,20 @@
 const fs = require("fs");
+const path = require("path");
 const { PDFDocument } = require("pdf-lib");
 const { extractTextFromPDF } = require("../services/pdfService");
 const { sendEmail } = require("../services/emailService");
-const pool = require("../db"); // conexão com o banco de dados PostgreSQL
+const pool = require("../db");
 
 async function handleUpload(req, res) {
 	try {
+		const uploadDir = path.join(__dirname, "..", "uploads");
+
+		// Garantir pasta existe e permissão
+		if (!fs.existsSync(uploadDir)) {
+			fs.mkdirSync(uploadDir, { recursive: true });
+		}
+		fs.chmodSync(uploadDir, 0o777);
+
 		const pdfPath = req.file.path;
 		const numero_empresa = req.body.numero_empresa;
 
