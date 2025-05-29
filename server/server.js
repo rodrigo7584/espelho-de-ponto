@@ -13,9 +13,8 @@ app.use(
 	cors({
 		origin: [
 			"http://localhost:3000",
-			"https://seudominio.com",
-			"http://192.168.0.148",
-			"https://192.168.0.148",
+			"https://desenvolvimento-pontofront.x0k8xs.easypanel.host",
+			"http://desenvolvimento-pontofront.x0k8xs.easypanel.host",
 		],
 		methods: ["GET", "POST", "PUT", "DELETE"],
 		allowedHeaders: ["Content-Type"],
