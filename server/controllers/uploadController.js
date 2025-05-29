@@ -4,7 +4,6 @@ const { PDFDocument } = require("pdf-lib");
 const { extractTextFromPDF } = require("../services/pdfService");
 const { sendEmail } = require("../services/emailService");
 const pool = require("../db");
-const resultadosEnvio = [];
 
 async function handleUpload(req, res) {
 	try {
@@ -20,10 +19,7 @@ async function handleUpload(req, res) {
 		const numero_empresa = req.body.numero_empresa;
 
 		if (!numero_empresa) {
-			// return res.status(400).send("Número da empresa não informado.");
-			return res
-				.status(404)
-				.json({ mensagem: "Número da empresa não informado." });
+			return res.status(400).send("Número da empresa não informado.");
 		}
 
 		// Consulta os colaboradores dessa empresa
@@ -33,10 +29,9 @@ async function handleUpload(req, res) {
 		);
 
 		if (colaboradores.length === 0) {
-			// return res.status(404).send("Nenhum colaborador encontrado para esta empresa.");
 			return res
 				.status(404)
-				.json({ mensagem: "Nenhum colaborador encontrado para esta empresa." });
+				.send("Nenhum colaborador encontrado para esta empresa.");
 		}
 
 		const pdfBytes = fs.readFileSync(pdfPath);
@@ -59,13 +54,6 @@ async function handleUpload(req, res) {
 			const linhaMatricula = linhas[5];
 			const linhaColaborador = linhas[6];
 
-			const statusEnvio = {
-				pagina: i + 1,
-				linhaColaborador,
-				email: null,
-				enviado: false,
-			};
-
 			if (linhaMatricula) {
 				const match = linhaMatricula.match(/\b\d{5}\b/);
 				if (match) {
@@ -78,25 +66,20 @@ async function handleUpload(req, res) {
 						(col) => col.numero_matricula === matriculaEncontrada,
 					);
 					if (colaborador) {
-						// await sendEmail(colaborador.email_colaborador, outputPath);
-						statusEnvio.email = colaborador.email_colaborador;
-						statusEnvio.enviado = true;
+						await sendEmail(colaborador.email_colaborador, outputPath);
 						console.log(
-							`Página ${i + 1} foi enviada para ${linhaColaborador} no email:${colaborador.email_colaborador}`,
+							`Página ${i + 1} foi enviada para ${linhaColaborador} ${colaborador.email_colaborador}`,
 						);
 					}
 				}
 			}
-			resultadosEnvio.push(statusEnvio);
+
 			fs.unlinkSync(outputPath);
 		}
 
 		fs.unlinkSync(pdfPath);
 
-		res.json({
-			mensagem: "PDF processado.",
-			resultados: resultadosEnvio,
-		});
+		res.send("PDF processado e e-mails enviados!");
 	} catch (error) {
 		console.error(error);
 		res.status(500).send("Erro ao processar PDF.");
