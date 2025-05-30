@@ -11,9 +11,7 @@ async function handleUpload(req, res) {
 	try {
 		const dataBuffer = fs.readFileSync(filePath);
 		const pdfData = await pdfParse(dataBuffer);
-
 		const text = pdfData.text;
-
 		const results = [];
 
 		// Regex para capturar Nome e E-Mail
@@ -30,8 +28,14 @@ async function handleUpload(req, res) {
 
 		// Deletar o arquivo após o processamento (opcional)
 		fs.unlinkSync(filePath);
+		if (results < 1) {
+			return res.json({
+				dados: results,
+				mensagem: "PDF recebido mas fora do padrão",
+			});
+		}
 
-		return res.json({ dados: results });
+		return res.json({ dados: results, mensagem: "PDF processado" });
 	} catch (err) {
 		console.error("Erro ao processar o PDF:", err);
 		return res.status(500).json({ error: "Erro ao processar o PDF." });

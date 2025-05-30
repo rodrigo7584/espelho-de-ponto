@@ -16,6 +16,18 @@ export default function Home() {
 					Colaboradores
 				</Link>
 			</Button>
+			<Button asChild>
+				<Link href="/arquivos">
+					<Users/>
+					Arquivos
+				</Link>
+			</Button>
+				<Button asChild>
+				<Link href="/dual">
+					<Users/>
+					Dual
+				</Link>
+			</Button>
 		</div>
 	);
 }

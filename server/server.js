@@ -6,6 +6,7 @@ const cors = require("cors");
 const uploadRoutes = require("./routes/uploadRoutes");
 const colaboradorRoutes = require("./routes/colaboradorRoutes");
 const arquivosRoutes = require("./routes/arquivosRoutes");
+const uploadDualRoutes = require("./routes/uploadDualRoutes");
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use(express.json());
 app.use("/api/upload", uploadRoutes);
 app.use("/api/colaboradores", colaboradorRoutes);
 app.use("/api/arquivos", arquivosRoutes);
+app.use("/api/uploadDual", uploadDualRoutes);
 
 // Inicia o servidor
 const PORT = process.env.PORT || 3001;
