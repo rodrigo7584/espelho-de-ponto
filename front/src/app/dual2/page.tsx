@@ -1,5 +1,17 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ArrowUpFromLine, MailIcon, Undo2Icon } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 import { useState } from "react";
 
 export default function Dual() {
@@ -8,6 +20,7 @@ export default function Dual() {
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
   const [resultados, setResultados] = useState([]);
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -99,41 +112,59 @@ export default function Dual() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
+    <div className="min-h-screen flex flex-col items-center bg-gray-100 p-6 gap-6">
+      <h1 className="text-2xl font-bold text-gray-700">Envio de ponto</h1>
       <div className="bg-white shadow-lg rounded-xl p-8 w-full max-w-md">
-        <h1 className="text-2xl font-bold mb-6 text-gray-700">Envio Dual de PDFs</h1>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input type="file" accept="application/pdf" onChange={(e) => setPdfColaboradores(e.target.files[0])} />
-          <input type="file" accept="application/pdf" onChange={(e) => setPdfTarget(e.target.files[0])} />
-          <button type="submit" disabled={loading}>
+        <form onSubmit={handleSubmit} className="space-y-1">
+          <h2 className="text-md font-medium">Arquivo Sênior</h2>
+          <Input type="file" accept="application/pdf" onChange={(e) => setPdfColaboradores(e.target.files[0])} />
+          <h2 className="text-md font-medium mt-2">Arquivo Ponto</h2>
+          <Input type="file" accept="application/pdf" onChange={(e) => setPdfTarget(e.target.files[0])} />
+          <Button type="submit" disabled={loading} className="w-full mt-4">
+            <ArrowUpFromLine/>
             {loading ? "Processando..." : "Processar PDFs"}
-          </button>
+          </Button>
         </form>
-
-        {resultados.length > 0 && (
-          <div className="mt-4">
-            <h2 className="font-bold mb-2">E-mails prontos:</h2>
-            <ul className="text-sm">
-              {resultados.map((r, idx) => (
-                <li key={idx}>
-                  📄 Página {r.pagina}: {r.nome} → {r.email}
-                </li>
-              ))}
-            </ul>
-            <div className="flex gap-2 mt-4">
-              <button onClick={handleEnviarEmails} disabled={loading} className="bg-green-500 text-white p-2 rounded">
-                Enviar E-mails
-              </button>
-              <button onClick={handleCancelar} disabled={loading} className="bg-red-500 text-white p-2 rounded">
-                Cancelar
-              </button>
-            </div>
-          </div>
-        )}
-
         {status && <p className="mt-4 text-sm">{status}</p>}
       </div>
+      
+      {resultados.length > 0 && (
+      <div className="bg-white shadow-lg rounded-xl p-8 w-full max-w-2xl">
+        <div className="mt-4">
+          <h2 className="font-bold mb-2 text-center">E-mails encontrados:</h2>
+          <Table className="p-6 bg-blue-50 rounded-lg shadow-lg">
+            <TableCaption>Lista de emails</TableCaption>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="font-medium text-center">Página</TableHead>
+                <TableHead>Nome</TableHead>
+                <TableHead>Email</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {resultados.map((r, idx) => (
+                <TableRow  key={idx}>
+                  <TableCell className="font-medium text-center text-sm">{r.pagina}</TableCell>
+                  <TableCell className="text-xs">{r.nome}</TableCell>
+                  <TableCell className="text-xs">{r.email}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <div className="flex gap-2 mt-4">
+            <Button onClick={handleEnviarEmails} disabled={loading} className="bg-green-500 hover:bg-green-400 flex-1/2">
+              <MailIcon/>
+              Enviar E-mails
+            </Button>
+            <Button onClick={handleCancelar} disabled={loading} className="bg-red-500 hover:bg-red-400 flex-1/2">
+              <Undo2Icon/>
+              Cancelar
+            </Button>
+          </div>
+        </div>
+      </div>
+      )}
+    
     </div>
   );
 }
