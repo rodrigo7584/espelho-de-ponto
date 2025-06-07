@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/table"
 import { useState } from "react";
 
-export default function Dual() {
+export default function DualWithReturn() {
   const [pdfColaboradores, setPdfColaboradores] = useState(null);
   const [pdfTarget, setPdfTarget] = useState(null);
   const [status, setStatus] = useState("");
@@ -47,7 +47,7 @@ export default function Dual() {
 
       if (res.ok) {
         setResultados(data.resultados);
-        setStatus(`✅ Processado. ${data.resultados.length} e-mails prontos.`);
+        setStatus(`✅ Processado.`);
       } else {
         setStatus(`❌ ${data.mensagem || "Erro no processamento"}`);
       }
@@ -146,7 +146,7 @@ export default function Dual() {
                 <TableRow  key={idx}>
                   <TableCell className="font-medium text-center text-sm">{r.pagina}</TableCell>
                   <TableCell className="text-xs">{r.nome}</TableCell>
-                  <TableCell className="text-xs">{r.email}</TableCell>
+                  <TableCell className="text-xs">{r.email ? r.email : 'Não possui email'}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

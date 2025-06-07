@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui/button";
-import { FileUp, Users } from "lucide-react";
+import { FilesIcon, FileUp, Users } from "lucide-react";
 import Link from "next/link";
 export default function Home() {
 	return (
 		<div className="h-[100vh] flex justify-center items-center gap-4">
-			<Button asChild >
+			{/* <Button asChild >
 				<Link href="/envio">
 					<FileUp/>
 					Enviar Arquivos
@@ -22,10 +22,16 @@ export default function Home() {
 					Arquivos
 				</Link>
 			</Button>
-				<Button asChild>
+			<Button asChild>
 				<Link href="/dual">
 					<Users/>
 					Dual
+				</Link>
+			</Button> */}
+			<Button asChild>
+				<Link href="/dualWithReturn">
+					<FilesIcon/>
+					Enviar arquivos 
 				</Link>
 			</Button>
 		</div>

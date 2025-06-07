@@ -54,7 +54,7 @@ async function processarDual(req, res) {
       if (linhaColaborador) {
         const colaboradorEncontrado = colaboradores.find((col) =>
           linhaColaborador.toLowerCase().includes(col.nome.toLowerCase().trim())
-        );
+        );     
 
         if (colaboradorEncontrado) {
           resultados.push({
@@ -63,7 +63,14 @@ async function processarDual(req, res) {
             pagina: i + 1,
             pdf: outputPath
           });
+          
         } else {
+          resultados.push({
+            nome: linhaColaborador,
+            email: null,
+            pagina: null,
+            pdf: null
+          });
           fs.unlinkSync(outputPath);
         }
       } else {
@@ -85,8 +92,10 @@ async function enviarEmails(req, res) {
     const { lista } = req.body; // [{ nome, email, pagina, pdf }]
 
     for (const item of lista) {
-      await sendEmail(item.email, item.pdf);
-      fs.unlinkSync(item.pdf);
+      if(item.email){
+        await sendEmail(item.email, item.pdf);
+        fs.unlinkSync(item.pdf);
+      }
     }
 
     return res.json({ mensagem: "E-mails enviados com sucesso!" });
